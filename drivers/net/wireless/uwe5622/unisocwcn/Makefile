@@ -58,6 +58,7 @@ $(MODULE_NAME)-y += wcn_bus.o \
 		    platform/wcn_txrx.o \
 		    platform/wcn_misc.o \
 		    platform/wcn_procfs.o \
+		    platform/wcn_dump.o \
 		    platform/loopcheck.o
 
 $(MODULE_NAME)-y += \
