@@ -17,8 +17,6 @@
 #include <linux/mutex.h>
 #include <linux/slab.h>
 #include <linux/spinlock.h>
-#include <linux/io.h>
-
 #include <wcn_bus.h>
 
 struct buffer_pool_t {

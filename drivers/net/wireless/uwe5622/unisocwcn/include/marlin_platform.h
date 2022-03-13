@@ -20,7 +20,6 @@
 #define __MARLIN_H__
 
 #include <linux/types.h>
-#include <linux/notifier.h>
 
 #define FALSE								(0)
 #define TRUE								(1)
@@ -82,13 +81,6 @@ enum marlin_wake_host_en {
 	WL_WAKE_HOST
 };
 
-enum marlin_cp2_status {
-	MARLIN_CP2_STS_ASSERTED = 0,
-};
-
-enum wcn_hw_type wcn_get_hw_if_type(void);
-enum wcn_clock_type wcn_get_xtal_26m_clk_type(void);
-enum wcn_clock_mode wcn_get_xtal_26m_clk_mode(void);
 unsigned int marlin_get_wcn_chipid(void);
 const char *wcn_get_chip_name(void);
 enum wcn_chip_model wcn_get_chip_model(void);
@@ -99,8 +91,6 @@ int marlin_get_wcn_module_vendor(void);
 int marlin_get_ant_num(void);
 void marlin_power_off(enum marlin_sub_sys subsys);
 int marlin_get_power(enum marlin_sub_sys subsys);
-int marlin_set_wakeup(enum marlin_sub_sys subsys);
-int marlin_set_sleep(enum marlin_sub_sys subsys, bool enable);
 int marlin_reset_reg(void);
 int start_marlin(u32 subsys);
 int stop_marlin(u32 subsys);
@@ -108,7 +98,6 @@ void marlin_schedule_download_wq(void);
 int open_power_ctl(void);
 bool marlin_get_download_status(void);
 void marlin_chip_en(bool enable, bool reset);
-void marlin_cp2_reset(void);
 int marlin_get_module_status(void);
 int marlin_get_module_status_changed(void);
 int wcn_get_module_status_changed(void);
@@ -119,7 +108,4 @@ int is_first_power_on(enum marlin_sub_sys subsys);
 int cali_ini_need_download(enum marlin_sub_sys subsys);
 const char *strno(int subsys);
 void mdbg_assert_interface(char *str);
-int marlin_reset_callback_register(u32 subsys, struct notifier_block *nb);
-void marlin_reset_callback_unregister(u32 subsys, struct notifier_block *nb);
-int marlin_reset_notify_call(enum marlin_cp2_status sts);
 #endif

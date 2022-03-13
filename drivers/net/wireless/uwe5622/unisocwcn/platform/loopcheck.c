@@ -6,6 +6,7 @@
 #include "wcn_procfs.h"
 
 #define LOOPCHECK_TIMER_INTERVAL      5
+#define USERDEBUG	1
 #define WCN_LOOPCHECK_INIT	1
 #define WCN_LOOPCHECK_OPEN	2
 
@@ -18,6 +19,7 @@ struct wcn_loopcheck {
 };
 
 static struct wcn_loopcheck loopcheck;
+unsigned int (*cp_assert_cb_matrix[2])(unsigned int type) = {0};
 #endif
 static struct completion atcmd_completion;
 static struct mutex atcmd_lock;
@@ -51,6 +53,16 @@ int at_cmd_send(char *buf, unsigned int len)
 }
 
 #ifdef CONFIG_WCN_LOOPCHECK
+static void reset_cp(void)
+{
+	marlin_chip_en(0, 0);
+	if (cp_assert_cb_matrix[0])
+		cp_assert_cb_matrix[0](0);
+	if (cp_assert_cb_matrix[1])
+		cp_assert_cb_matrix[1](1);
+
+}
+
 static void loopcheck_work_queue(struct work_struct *work)
 {
 	int ret;
@@ -71,7 +83,10 @@ static void loopcheck_work_queue(struct work_struct *work)
 		stop_loopcheck();
 		WCN_ERR("didn't get loopcheck ack\n");
 		WCN_INFO("start dump CP2 mem\n");
-		mdbg_assert_interface("loopcheck fail");
+		if (USERDEBUG)
+			mdbg_assert_interface("loopcheck fail");
+		else
+			reset_cp();
 		return;
 	}
 
@@ -109,23 +124,6 @@ int get_board_ant_num(void)
 	unsigned char ret;
 
 	WCN_DEBUG("%s entry!\n", __func__);
-
-	/* 1. uwe5621 module on RK board(rk3368):
-	 * Antenna num is fixed to one.
-	 */
-#ifdef CONFIG_RK_BOARD
-#ifndef CONFIG_CHECK_DRIVER_BY_CHIPID
-#ifdef CONFIG_UWE5621
-	WCN_INFO("%s [one_ant]\n", __func__);
-	return MARLIN_ONE_ANT;
-#endif
-#else /*CONFIG_CHECK_DRIVER_BY_CHIPID*/
-	if (wcn_get_chip_model() == WCN_CHIP_MARLIN3) {
-		WCN_INFO("%s [one_ant]\n", __func__);
-		return MARLIN_ONE_ANT;
-	}
-#endif
-#endif /* CONFIG_RK_BOARD */
 
 	/* 2. uwe5622 module:
 	 * Antenna num is fixed to one.

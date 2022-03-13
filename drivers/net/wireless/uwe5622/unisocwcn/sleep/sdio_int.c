@@ -314,8 +314,7 @@ int sdio_pub_int_init(int irq)
 	sdio_int.pub_int_sts0 = REG_PUB_INT_STS0;
 
 	atomic_set(&flag_pub_int_done, 1);
-	sdio_int.pub_int_ws = wakeup_source_create("pub_int_ws");
-	wakeup_source_add(sdio_int.pub_int_ws);
+	sdio_int.pub_int_ws = wakeup_source_register(NULL, "pub_int_ws");
 	init_completion(&(sdio_int.pub_int_completion));
 
 	sdio_pub_int_register(irq);
@@ -344,8 +343,7 @@ int sdio_pub_int_deinit(void)
 	sdio_power_notify = FALSE;
 	disable_irq(sdio_int.pub_int_num);
 	free_irq(sdio_int.pub_int_num, NULL);
-	wakeup_source_remove(sdio_int.pub_int_ws);
-	wakeup_source_destroy(sdio_int.pub_int_ws);
+	wakeup_source_unregister(sdio_int.pub_int_ws);
 
 	SLP_MGR_INFO("%s ok!\n", __func__);
 

@@ -18,8 +18,6 @@
 #include <linux/types.h>
 #include <linux/version.h>
 #include <linux/wait.h>
-#if KERNEL_VERSION(4, 14, 0) <= LINUX_VERSION_CODE
-#endif
 
 #include "mdbg_type.h"
 #include <wcn_bus.h>
@@ -49,7 +47,7 @@ struct ring_rx_data {
 
 struct ring_device {
 	struct mdbg_ring_t	*ring;
-	struct wakeup_source	*rw_ws;
+	struct wakeup_source	*rw_wake_lock;
 	spinlock_t		rw_lock;
 	struct mutex mdbg_read_mutex;
 	struct list_head	rx_head;
@@ -89,14 +87,6 @@ enum wcnbus_channel_t {
 	WCN_ASSERT_RX = 3,
 	WCN_RING_RX = 4,
 	WCN_RSV_RX,
-};
-#elif defined(CONFIG_WCN_USB)
-enum wcnbus_channel_t {
-	WCN_AT_TX = 7,
-	WCN_LOOPCHECK_RX = 29,
-	WCN_AT_RX,
-	WCN_ASSERT_RX,
-	WCN_RING_RX = 24,
 };
 #else
 enum wcnbus_channel_t {
