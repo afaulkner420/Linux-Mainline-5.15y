@@ -45,15 +45,15 @@
 	leds {
 		compatible = "gpio-leds";
 
-		power {
-			label = "red-led";
-			gpios = <&r_pio 0 7 GPIO_ACTIVE_HIGH>; /* PL7 */
+		led-0 {
+			label = "orangepi:red:power";
+			gpios = <&r_pio 0 4 GPIO_ACTIVE_HIGH>; /* PL4 */
 			default-state = "on";
 		};
 
-		status {
-			label = "green-led";
-			gpios = <&r_pio 0 4 GPIO_ACTIVE_HIGH>; /* PL4 */
+		led-1 {
+			label = "orangepi:green:status";
+			gpios = <&r_pio 0 7 GPIO_ACTIVE_HIGH>; /* PL7 */
 		};
 	};
 
@@ -81,8 +81,8 @@
 		regulator-name = "vcc33-wifi";
 		regulator-min-microvolt = <3300000>;
 		regulator-max-microvolt = <3300000>;
-		enable-active-high;
-		gpio = <&pio 7 7 GPIO_ACTIVE_HIGH>; /* PH7 */
+		regulator-always-on;
+		vin-supply = <&reg_vcc5v>;
 	};
 
 	reg_vcc_wifi_io: vcc-wifi-io {
@@ -133,14 +133,6 @@
 	status = "okay";
 };
 
-&hdmi_sound {
-	status = "okay";
-};
-
-&i2s1 {
-	status = "okay";
-};
-
 &hdmi_out {
 	hdmi_out_con: endpoint {
 		remote-endpoint = <&hdmi_con_in>;
@@ -161,7 +153,7 @@
 	phy-supply = <&reg_aldo2>;
 	phy-io-supply = <&reg_gmac_2v5>;
 	allwinner,rx-delay-ps = <200>;
-	allwinner,tx-delay-ps = <300>;
+	allwinner,tx-delay-ps = <200>;
 	status = "okay";
 };
 
@@ -174,6 +166,10 @@
 		reset-assert-us = <15000>;
 		reset-deassert-us = <40000>;
 	};
+};
+
+&i2s1 {
+	status = "okay";
 };
 
 &mmc0 {
@@ -190,17 +186,24 @@
 	bus-width = <4>;
 	non-removable;
 	status = "okay";
+
+	uwe-bsp {
+		compatible = "unisoc,uwe_bsp";
+		keep-power-on;
+		data-irq;
+		//adma-tx;
+		adma-rx;
+		//blksz-512;
+		status = "okay";
+	};
 };
 
 &mmc2 {
-	pinctrl-names = "default";
-	pinctrl-0 = <&mmc2_pins>;
 	vmmc-supply = <&reg_cldo1>;
 	vqmmc-supply = <&reg_bldo2>;
-	bus-width = <8>;
-	non-removable;
 	cap-mmc-hw-reset;
-	mmc-hs200-1_8v;
+	non-removable;
+	bus-width = <8>;
 	status = "okay";
 };
 
@@ -218,14 +221,18 @@
 	vcc-pg-supply = <&reg_vcc_wifi_io>;
 };
 
-&r_i2c {
+&r_ir {
+	status = "okay";
+};
+
+&r_rsb {
 	status = "okay";
 
-	axp805: pmic@36 {
+	axp805: pmic@745 {
 		compatible = "x-powers,axp805", "x-powers,axp806";
-		reg = <0x36>;
+		reg = <0x745>;
 		interrupt-parent = <&r_intc>;
-		interrupts = <0 IRQ_TYPE_LEVEL_LOW>;
+		interrupts = <GIC_SPI 96 IRQ_TYPE_LEVEL_LOW>;
 		interrupt-controller;
 		#interrupt-cells = <1>;
 		x-powers,self-working-mode;
@@ -335,12 +342,12 @@
 	};
 };
 
-&r_ir {
-	status = "okay";
-};
-
 &rtc {
 	clocks = <&ext_osc32k>;
+};
+
+&sound_hdmi {
+	status = "okay";
 };
 
 /delete-node/ &spi0;
@@ -351,11 +358,22 @@
 	status = "okay";
 };
 
+/* There's the BT part of the AP6256 connected to that UART */
 &uart1 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&uart1_pins>, <&uart1_rts_cts_pins>;
 	uart-has-rtscts;
-	status = "disabled";
+	status = "okay";
+
+	bluetooth {
+		compatible = "brcm,bcm4345c5";
+		clocks = <&rtc 1>;
+		clock-names = "lpo";
+		device-wakeup-gpios = <&r_pio 1 2 GPIO_ACTIVE_HIGH>; /* PM2 */
+		host-wakeup-gpios = <&r_pio 1 1 GPIO_ACTIVE_HIGH>; /* PM1 */
+		shutdown-gpios = <&r_pio 1 4 GPIO_ACTIVE_HIGH>; /* PM4 */
+		max-speed = <1500000>;
+	};
 };
 
 &usb2otg {
