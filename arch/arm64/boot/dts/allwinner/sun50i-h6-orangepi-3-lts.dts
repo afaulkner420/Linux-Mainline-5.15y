@@ -19,7 +19,8 @@
 		ethernet0 = &emac;
 	};
 
-	chosen {
+        chosen {
+		bootargs = "rootdelay=5";
 		stdout-path = "serial0:115200n8";
 	};
 
@@ -47,13 +48,13 @@
 
 		led-0 {
 			label = "orangepi:red:power";
-			gpios = <&r_pio 0 4 GPIO_ACTIVE_HIGH>; /* PL4 */
+			gpios = <&r_pio 0 7 GPIO_ACTIVE_HIGH>; /* PL7 */
 			default-state = "on";
 		};
 
 		led-1 {
 			label = "orangepi:green:status";
-			gpios = <&r_pio 0 7 GPIO_ACTIVE_HIGH>; /* PL7 */
+			gpios = <&r_pio 0 4 GPIO_ACTIVE_HIGH>; /* PL4 */
 		};
 	};
 
