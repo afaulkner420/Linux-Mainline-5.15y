@@ -20,7 +20,7 @@
 	};
 
         chosen {
-		bootargs = "root=/dev/mmcblk0p1 rootwait rootdelay=10";
+		bootargs = "root=/dev/mmcblk0p2 rootwait rootdelay=10";
 		stdout-path = "serial0:115200n8";
 	};
 
