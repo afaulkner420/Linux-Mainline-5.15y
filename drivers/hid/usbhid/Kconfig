@@ -50,6 +50,7 @@ menu "USB HID Boot Protocol drivers"
 
 config USB_KBD
 	tristate "USB HIDBP Keyboard (simple Boot) support"
+	default y
 	depends on USB && INPUT
 	help
 	  Say Y here only if you are absolutely sure that you don't want
