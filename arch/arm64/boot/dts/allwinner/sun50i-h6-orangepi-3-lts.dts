@@ -200,6 +200,8 @@
 };
 
 &mmc2 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&mmc2_pins>;
 	vmmc-supply = <&reg_cldo1>;
 	vqmmc-supply = <&reg_bldo2>;
 	cap-mmc-hw-reset;
